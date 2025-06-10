@@ -164,6 +164,11 @@
           height: 250px;
         }
 
+        .progress-svg {
+          width: 250px;
+          height: 250px;
+        }
+
         .percentage {
           font-size: 2.5rem;
         }
@@ -173,12 +178,28 @@
           gap: 1.5rem;
         }
       }
+
+      @media (max-width: 375px) {
+        .circle-container {
+          width: 220px;
+          height: 220px;
+        }
+
+        .progress-svg {
+          width: 220px;
+          height: 220px;
+        }
+
+        .percentage {
+          font-size: 2.2rem;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <div class="circle-container">
-        <svg width="300" height="300" class="progress-svg">
+        <svg width="300" height="300" class="progress-svg" viewBox="0 0 300 300">
           <defs>
             <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" style="stop-color: #808080; stop-opacity: 1" />
@@ -256,9 +277,16 @@
       function updateDisplay(percentage) {
         // Update arc progress
         const angle = (percentage / 100) * 360;
-        const radius = 140;
-        const centerX = 150;
-        const centerY = 150;
+        
+        // Get the actual SVG dimensions for responsive calculations
+        const svg = document.querySelector('.progress-svg');
+        const svgRect = svg.getBoundingClientRect();
+        const svgSize = Math.min(svgRect.width, svgRect.height);
+        
+        // Calculate responsive values based on SVG viewBox (300x300)
+        const radius = (svgSize / 300) * 140; // Scale radius proportionally
+        const centerX = 150; // Keep viewBox coordinates
+        const centerY = 150; // Keep viewBox coordinates
 
         if (percentage === 0) {
           progressArc.setAttribute("d", "");
@@ -271,16 +299,16 @@
         const endAngle = startAngle + angle;
 
         const startX =
-          centerX + radius * Math.cos((startAngle * Math.PI) / 180);
+          centerX + 140 * Math.cos((startAngle * Math.PI) / 180);
         const startY =
-          centerY + radius * Math.sin((startAngle * Math.PI) / 180);
-        const endX = centerX + radius * Math.cos((endAngle * Math.PI) / 180);
-        const endY = centerY + radius * Math.sin((endAngle * Math.PI) / 180);
+          centerY + 140 * Math.sin((startAngle * Math.PI) / 180);
+        const endX = centerX + 140 * Math.cos((endAngle * Math.PI) / 180);
+        const endY = centerY + 140 * Math.sin((endAngle * Math.PI) / 180);
 
         const largeArcFlag = angle > 180 ? 1 : 0;
 
-        // Create arc path
-        const pathData = `M ${startX} ${startY} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endX} ${endY}`;
+        // Create arc path using viewBox coordinates
+        const pathData = `M ${startX} ${startY} A 140 140 0 ${largeArcFlag} 1 ${endX} ${endY}`;
         progressArc.setAttribute("d", pathData);
 
         // Update percentage display
