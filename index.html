@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>life</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❍</text></svg>"
+    />
+    <style>
+      /* Reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      /* Body */
+      body {
+        font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont,
+          "Helvetica Neue", "Inter", "Avenir", sans-serif;
+        font-weight: 300;
+        background: linear-gradient(
+          135deg,
+          #1a1a1a 0%,
+          #2d2d2d 50%,
+          #1a1a1a 100%
+        );
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #e0e0e0;
+        padding: 20px;
+      }
+
+      /* Container */
+      .container {
+        text-align: center;
+        max-width: 500px;
+        width: 100%;
+      }
+
+      /* Circle Container */
+      .circle-container {
+        position: relative;
+        width: 300px;
+        height: 300px;
+        margin: 0 auto 2rem;
+      }
+
+      /* SVG Progress Arc */
+      .progress-svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      #progressArc {
+        transition: d 0.8s ease-in-out;
+      }
+
+      /* Circle Inner Content */
+      .circle-inner {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+        border-radius: 50%;
+        background: transparent;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .percentage {
+        font-size: 3rem;
+        font-weight: 100;
+        color: #e0e0e0;
+        margin-bottom: 0.25rem;
+        letter-spacing: 0.1em;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+      }
+
+      .percentage:hover {
+        opacity: 0.8;
+      }
+
+      .circle-inner {
+        cursor: pointer;
+      }
+
+      /* Footer */
+      .footer {
+        position: fixed;
+        bottom: -100px;
+        left: 0;
+        right: 0;
+        background: rgba(64, 64, 64, 0.8);
+        backdrop-filter: blur(10px);
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 3rem;
+        transition: bottom 0.3s ease-in-out;
+        z-index: 1000;
+      }
+
+      .footer.visible {
+        bottom: 0;
+      }
+
+      .input-group {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      label {
+        font-size: 0.6rem;
+        font-weight: 100;
+        color: #808080;
+        white-space: nowrap;
+        letter-spacing: 0.05em;
+      }
+
+      input {
+        padding: 4px 8px;
+        border: 1px solid rgba(96, 96, 96, 0.15);
+        border-radius: 3px;
+        font-size: 0.6rem;
+        font-weight: 100;
+        background: rgba(64, 64, 64, 0.6);
+        color: #909090;
+        text-align: center;
+        letter-spacing: 0.05em;
+      }
+
+      input:focus {
+        outline: none;
+        box-shadow: 0 0 0 1px rgba(128, 128, 128, 0.3);
+        border-color: rgba(128, 128, 128, 0.3);
+        background: rgba(80, 80, 80, 0.8);
+      }
+
+      input[type="date"] {
+        width: 140px;
+      }
+
+      input[type="number"] {
+        width: 80px;
+      }
+
+      /* Mobile Responsive */
+      @media (max-width: 480px) {
+        .circle-container {
+          width: 250px;
+          height: 250px;
+        }
+
+        .percentage {
+          font-size: 2.5rem;
+        }
+
+        .footer {
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="circle-container">
+        <svg width="300" height="300" class="progress-svg">
+          <defs>
+            <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color: #808080; stop-opacity: 1" />
+              <stop
+                offset="100%"
+                style="stop-color: #f0f0f0; stop-opacity: 1"
+              />
+            </linearGradient>
+          </defs>
+          <path
+            id="progressArc"
+            d=""
+            stroke="url(#arcGradient)"
+            stroke-width="12"
+            fill="none"
+            stroke-linecap="butt"
+          />
+        </svg>
+        <div class="circle-inner">
+          <div class="percentage" id="percentage">0%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="input-group">
+        <label for="birthDate">Birth Date</label>
+        <input type="date" id="birthDate" value="1995-04-28" />
+      </div>
+      <div class="input-group">
+        <label for="lifeExpectancy">Life Expectancy</label>
+        <input type="number" id="lifeExpectancy" value="82" min="1" max="150" />
+      </div>
+    </div>
+
+    <script>
+      // DOM Elements
+      const birthDateInput = document.getElementById("birthDate");
+      const lifeExpectancyInput = document.getElementById("lifeExpectancy");
+      const progressArc = document.getElementById("progressArc");
+      const percentageDisplay = document.getElementById("percentage");
+      const footer = document.querySelector(".footer");
+      const circleInner = document.querySelector(".circle-inner");
+
+      // Calculate life progress percentage
+      function calculateLifeProgress() {
+        const birthDate = new Date(birthDateInput.value);
+        const lifeExpectancy = parseFloat(lifeExpectancyInput.value);
+        const currentDate = new Date();
+
+        // Validation
+        if (
+          !birthDateInput.value ||
+          !lifeExpectancy ||
+          birthDate > currentDate
+        ) {
+          updateDisplay(0);
+          return;
+        }
+
+        // Calculate years lived with decimal precision
+        const millisecondsPerYear = 365.25 * 24 * 60 * 60 * 1000;
+        const yearsLived = (currentDate - birthDate) / millisecondsPerYear;
+
+        // Calculate progress percentage
+        const progressPercentage = Math.min(
+          (yearsLived / lifeExpectancy) * 100,
+          100
+        );
+
+        updateDisplay(progressPercentage);
+      }
+
+      // Update the visual display
+      function updateDisplay(percentage) {
+        // Update arc progress
+        const angle = (percentage / 100) * 360;
+        const radius = 140;
+        const centerX = 150;
+        const centerY = 150;
+
+        if (percentage === 0) {
+          progressArc.setAttribute("d", "");
+          percentageDisplay.textContent = "0%";
+          return;
+        }
+
+        // Calculate arc coordinates
+        const startAngle = -90; // Start at top (12 o'clock)
+        const endAngle = startAngle + angle;
+
+        const startX =
+          centerX + radius * Math.cos((startAngle * Math.PI) / 180);
+        const startY =
+          centerY + radius * Math.sin((startAngle * Math.PI) / 180);
+        const endX = centerX + radius * Math.cos((endAngle * Math.PI) / 180);
+        const endY = centerY + radius * Math.sin((endAngle * Math.PI) / 180);
+
+        const largeArcFlag = angle > 180 ? 1 : 0;
+
+        // Create arc path
+        const pathData = `M ${startX} ${startY} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endX} ${endY}`;
+        progressArc.setAttribute("d", pathData);
+
+        // Update percentage display
+        percentageDisplay.textContent = `${Math.round(percentage)}%`;
+      }
+
+      // Toggle footer visibility
+      function toggleFooter() {
+        footer.classList.toggle("visible");
+      }
+
+      // Event listeners
+      birthDateInput.addEventListener("change", calculateLifeProgress);
+      lifeExpectancyInput.addEventListener("input", calculateLifeProgress);
+      circleInner.addEventListener("click", toggleFooter);
+
+      // Initialize
+      calculateLifeProgress();
+
+      // Auto-update every minute
+      setInterval(calculateLifeProgress, 60000);
+    </script>
+  </body>
+</html>
